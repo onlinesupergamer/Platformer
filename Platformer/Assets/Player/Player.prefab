@@ -2693,7 +2693,7 @@ MonoBehaviour:
   jumpButtonGracePeriod: 0.1
   jumpHorizontalSpeed: 5
   gravityMultiplier: 2
-  cameraTransform: {fileID: 0}
+  cameraTransform: {fileID: 7545233477254592638, guid: 952830de23305734ebacc6f4edc5e143, type: 3}
 --- !u!114 &6027429308094055098
 MonoBehaviour:
   m_ObjectHideFlags: 0

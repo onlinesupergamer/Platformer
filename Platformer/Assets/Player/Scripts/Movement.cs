@@ -131,13 +131,23 @@ public class Movement : MonoBehaviour
             characterController.Move(velocity * Time.deltaTime);
         }
 
-       
+        if (Input.GetButtonDown("Attack") && canAttack) 
+        {
+            Attack();
+        }
 
         
      
     }
 
-   
+    IEnumerator AttackReset() 
+    {
+        yield return new WaitForSeconds(0.3f);
+        canJump = true;
+        yield return new WaitForSeconds(0.6f);
+        canAttack = true;
+        
+    }
     
     private void OnAnimatorMove()
     {
@@ -164,7 +174,20 @@ public class Movement : MonoBehaviour
             }
         }
         return velocity;
-    } 
+    }
+
+    private void Attack() 
+    {
+        if (isGrounded) {
+            canAttack = false;
+            canJump = false;
+            animator.SetTrigger("Attack");
+
+            StartCoroutine(AttackReset());
+        }
+        
+
+    }
 
 
     private void OnApplicationFocus(bool focus)

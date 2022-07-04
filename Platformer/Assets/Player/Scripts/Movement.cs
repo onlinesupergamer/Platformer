@@ -12,8 +12,9 @@ public class Movement : MonoBehaviour
     int m_isWalkingHash;
     int m_isJumpingHash;
     bool bisJumpAnimating;
-    
 
+    public Transform camera;
+    float heading;
 
     Vector2 m_currentMovementInput;
     Vector3 m_currentMovement;
@@ -90,10 +91,6 @@ public class Movement : MonoBehaviour
         jumpGravities.Add(1, gravity);
         jumpGravities.Add(2, secondJumpGravity);
         jumpGravities.Add(3, thirdJumpGravity);
-
-
-
-
     }
 
     void HandleGravity()
@@ -171,10 +168,10 @@ public class Movement : MonoBehaviour
         HandleAnimation();
         HandleRotation();
         characterController.Move(m_currentMovement * Time.deltaTime);
+        
 
        HandleGravity();
         HandleJump();
-
     }
    
 
@@ -211,11 +208,6 @@ public class Movement : MonoBehaviour
         }
 
     }
-
-    
-
-
-    
 
     void OnEnable()
     {

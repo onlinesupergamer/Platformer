@@ -167,6 +167,45 @@ public partial class @Player_Input : IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": false
                 }
             ]
+        },
+        {
+            ""name"": ""CameraInput"",
+            ""id"": ""740e184b-27de-4445-a04c-ed52ad5d018a"",
+            ""actions"": [
+                {
+                    ""name"": ""Look"",
+                    ""type"": ""PassThrough"",
+                    ""id"": ""434bf1c8-50f6-487b-b5dc-01a06da50570"",
+                    ""expectedControlType"": ""Vector2"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""78504f24-5000-4d21-a2be-eff600c5da8a"",
+                    ""path"": ""<Mouse>/delta"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Look"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""f69ed134-2949-49bf-92f4-919fe3978a14"",
+                    ""path"": ""<Gamepad>/rightStick"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Look"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
         }
     ],
     ""controlSchemes"": []
@@ -176,6 +215,9 @@ public partial class @Player_Input : IInputActionCollection2, IDisposable
         m_CharacterControls_Move = m_CharacterControls.FindAction("Move", throwIfNotFound: true);
         m_CharacterControls_Run = m_CharacterControls.FindAction("Run", throwIfNotFound: true);
         m_CharacterControls_Jump = m_CharacterControls.FindAction("Jump", throwIfNotFound: true);
+        // CameraInput
+        m_CameraInput = asset.FindActionMap("CameraInput", throwIfNotFound: true);
+        m_CameraInput_Look = m_CameraInput.FindAction("Look", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -280,10 +322,47 @@ public partial class @Player_Input : IInputActionCollection2, IDisposable
         }
     }
     public CharacterControlsActions @CharacterControls => new CharacterControlsActions(this);
+
+    // CameraInput
+    private readonly InputActionMap m_CameraInput;
+    private ICameraInputActions m_CameraInputActionsCallbackInterface;
+    private readonly InputAction m_CameraInput_Look;
+    public struct CameraInputActions
+    {
+        private @Player_Input m_Wrapper;
+        public CameraInputActions(@Player_Input wrapper) { m_Wrapper = wrapper; }
+        public InputAction @Look => m_Wrapper.m_CameraInput_Look;
+        public InputActionMap Get() { return m_Wrapper.m_CameraInput; }
+        public void Enable() { Get().Enable(); }
+        public void Disable() { Get().Disable(); }
+        public bool enabled => Get().enabled;
+        public static implicit operator InputActionMap(CameraInputActions set) { return set.Get(); }
+        public void SetCallbacks(ICameraInputActions instance)
+        {
+            if (m_Wrapper.m_CameraInputActionsCallbackInterface != null)
+            {
+                @Look.started -= m_Wrapper.m_CameraInputActionsCallbackInterface.OnLook;
+                @Look.performed -= m_Wrapper.m_CameraInputActionsCallbackInterface.OnLook;
+                @Look.canceled -= m_Wrapper.m_CameraInputActionsCallbackInterface.OnLook;
+            }
+            m_Wrapper.m_CameraInputActionsCallbackInterface = instance;
+            if (instance != null)
+            {
+                @Look.started += instance.OnLook;
+                @Look.performed += instance.OnLook;
+                @Look.canceled += instance.OnLook;
+            }
+        }
+    }
+    public CameraInputActions @CameraInput => new CameraInputActions(this);
     public interface ICharacterControlsActions
     {
         void OnMove(InputAction.CallbackContext context);
         void OnRun(InputAction.CallbackContext context);
         void OnJump(InputAction.CallbackContext context);
+    }
+    public interface ICameraInputActions
+    {
+        void OnLook(InputAction.CallbackContext context);
     }
 }

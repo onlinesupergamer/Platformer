@@ -6,7 +6,8 @@ public class PlayerMovement : MonoBehaviour
 {
     public float maximumSpeed;
     public float rotationSpeed;
-    public float jumpSpeed;
+    public float jumpHeight;
+    public float gravityMultiplier;
     public float jumpButtonGracePeriod;
     
 
@@ -48,8 +49,13 @@ public class PlayerMovement : MonoBehaviour
 
         movementDirection.Normalize();
 
+        float gravity = Physics.gravity.y * gravityMultiplier;
 
-        ySpeed += Physics.gravity.y * Time.deltaTime;
+        if (isJumping && ySpeed > 0 && Input.GetButton("Jump") == false) 
+        {
+            gravity *= 2;
+        }
+        ySpeed += gravity * Time.deltaTime;
 
         if (characterController.isGrounded) 
         {
@@ -72,7 +78,7 @@ public class PlayerMovement : MonoBehaviour
 
             if (Time.time - jumpButtonPressedTime <= jumpButtonGracePeriod)
             {
-                ySpeed = jumpSpeed;
+                ySpeed = Mathf.Sqrt(jumpHeight * -3 * gravity);
                 animator.SetBool("IsJumping", true);
                 isJumping = true;
                 jumpButtonPressedTime = null;

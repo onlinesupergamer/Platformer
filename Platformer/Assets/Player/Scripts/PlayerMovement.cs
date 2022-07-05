@@ -8,7 +8,7 @@ public class PlayerMovement : MonoBehaviour
     public float rotationSpeed;
     public float jumpSpeed;
     public float jumpButtonGracePeriod;
-
+    
 
     Animator animator;
     float originalStepOffset;
@@ -36,6 +36,8 @@ public class PlayerMovement : MonoBehaviour
     {
         float m_horizontalInput = Input.GetAxis("Horizontal");
         float m_verticalInput = Input.GetAxis("Vertical");
+
+
 
         Vector3 movementDirection = new Vector3(m_horizontalInput, 0, m_verticalInput);
         float inputMagnitude = Mathf.Clamp01(movementDirection.magnitude);
@@ -93,7 +95,8 @@ public class PlayerMovement : MonoBehaviour
 
 
         Vector3 Velocity = movementDirection * speed;
-        Velocity.y = ySpeed;
+        Velocity = AdjustVelocityToSlope(Velocity);
+        Velocity.y += ySpeed;
         characterController.Move(Velocity * Time.deltaTime);
 
         if (movementDirection != Vector3.zero)
@@ -108,7 +111,28 @@ public class PlayerMovement : MonoBehaviour
             animator.SetBool("IsMoving", false);
         }
 
+
+
+
         }
-    
+    private Vector3 AdjustVelocityToSlope(Vector3 velocity) 
+    {
+        var ray = new Ray(transform.position, Vector3.down);
+
+        if (Physics.Raycast(ray, out RaycastHit hitInfo, 0.2f)) 
+        {
+            var slopeRotation = Quaternion.FromToRotation(Vector3.up, hitInfo.normal);
+            var AdjustedVelocity = slopeRotation * velocity;
+
+            if (AdjustedVelocity.y < 0) 
+            {
+                return AdjustedVelocity;
+            }
+            
+        }
+        return velocity;
+    }
+
+  
 }
 
